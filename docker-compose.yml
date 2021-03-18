@@ -1,0 +1,55 @@
+version: '3.7'
+services:
+  nginx:
+    environment:
+      TZ: Asia/Shanghai
+    image: nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - 80:80
+      - 443:443
+    privileged: true
+    volumes:
+      - './nginx/conf.d:/etc/nginx/conf.d'
+      - './nginx/www:/etc/www'
+  mysql:
+    restart: always
+    image: mysql
+    container_name: mysql
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 'hf1314520wcc!'
+      MYSQL_USER: 'localhost'
+      MYSQL_PASS: '12345678'
+    ports:
+      - 3306:3306
+    volumes:
+      - './mysql/data:/var/lib/mysql'
+    command: --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_0900_ai_ci
+      --explicit_defaults_for_timestamp=true
+  blog_node_express:
+    environment:
+      TZ: Asia/Shanghai
+    image: node:12
+    container_name: blog_node_express
+    working_dir: /var/blog_node_express
+    volumes:
+      - '/var/www/blog_node_express:/var/blog_node_express'
+    ports:
+      - 1202:1202
+    command: npm run start
+  # 主站
+  nuxt-app:
+    environment:
+      TZ: Asia/Shanghai
+    image: node:12
+    container_name: nuxt-project
+    working_dir: /var/nuxt-project/website
+    volumes:
+      - '/var/www/nuxt-project:/var/nuxt-project'
+    ports:
+      - 3000:3000
+    command: npm run start
